@@ -17,15 +17,13 @@
           <div class="pointer-label">紅指針</div>
           <div class="pointer-value" id="redPointer">I</div>
         </div>
-        <div class="scoreboard-divider">:</div>
-        <div class="pointer-section blue-pointer">
+        <div class="scoreboard-divider">:</div>        <div class="pointer-section blue-pointer">
           <div class="pointer-label">藍指針</div>
           <div class="pointer-value" id="bluePointer">XII</div>
+          <div class="pointer-control">
+            <span class="control-icon">🕐</span>
+          </div>
         </div>
-      </div>
-      <div class="pointer-status">
-        <span class="status-text">時間錨點狀態：</span>
-        <span class="status-indicator stable" id="timeStatus">穩定</span>
       </div>
       <div class="pointer-controls">
         <button class="control-btn" id="randomPointers">🎲 隨機指針</button>
@@ -60,9 +58,8 @@
                   <div class="disk-face disk-face-a" data-side="A">
                     <span class="disk-icon">💿</span>
                     <span class="face-label">A</span>
-                  </div>
-                  <div class="disk-face disk-face-b" data-side="B" style="display: none;">
-                    <span class="disk-icon">💽</span>
+                  </div>                  <div class="disk-face disk-face-b" data-side="B" style="display: none;">
+                    <span class="disk-icon">📀</span>
                     <span class="face-label">B</span>
                   </div>
                   <button class="flip-btn" data-drawer="<%= i %>">🔄</button>
@@ -71,7 +68,7 @@
                 <!-- 讀卡機插槽 -->
                 <div class="card-reader" data-drawer="<%= i %>">
                   <div class="reader-slot">
-                    <div class="slot-opening">📀</div>
+                    <div class="slot-opening">💿︎</div>
                     <div class="slot-hint">將 Disk 拖曳至此</div>
                   </div>
                   <div class="reader-display">
@@ -90,7 +87,29 @@
         </div>
       <% } %>
     </div>
-  </div>  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </div>  
+  
+  <!-- 藍指針調整彈窗 -->
+  <div class="pointer-popup" id="bluePointerPopup">
+    <div class="popup-content">
+      <div class="popup-header">
+        <h3>調整藍指針位置</h3>
+        <button class="popup-close" id="closePopup">×</button>
+      </div>
+      <div class="clock-face">
+        <div class="clock-center"></div>        <div class="clock-numbers">
+          <% for(let i = 1; i <= 12; i++) { %>
+            <div class="clock-number" data-value="<%= i %>">
+              <span class="roman-number"><%= ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'][i] %></span>
+            </div>
+          <% } %>
+        </div>
+        <div class="clock-hand" id="clockHand"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/cabinet.js"></script>
 </body>
 </html>

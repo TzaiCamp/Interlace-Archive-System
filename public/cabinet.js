@@ -4,50 +4,24 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 初始化指針值
   let redPointerValue = 1;
-  let bluePointerValue = 12;
-  
-  // 更新指針顯示
+  let bluePointerValue = 12;  // 更新指針顯示
   function updatePointers() {
     document.getElementById('redPointer').textContent = romanNumerals[redPointerValue];
     document.getElementById('bluePointer').textContent = romanNumerals[bluePointerValue];
-    
-    // 根據指針值更新時間狀態
-    updateTimeStatus();
   }
-  
-  // 更新時間狀態
-  function updateTimeStatus() {
-    const statusElement = document.getElementById('timeStatus');
-    const difference = Math.abs(redPointerValue - bluePointerValue);
-    
-    if (difference <= 2) {
-      statusElement.textContent = '危險';
-      statusElement.className = 'status-indicator critical';
-    } else if (difference <= 4) {
-      statusElement.textContent = '異常';
-      statusElement.className = 'status-indicator anomaly';
-    } else {
-      statusElement.textContent = '穩定';
-      statusElement.className = 'status-indicator stable';
-    }
-  }
-  
-  // 隨機指針按鈕
+    // 隨機指針按鈕
   document.getElementById('randomPointers').addEventListener('click', function() {
     redPointerValue = Math.floor(Math.random() * 12) + 1;
-    bluePointerValue = Math.floor(Math.random() * 12) + 1;
+    // 藍指針保持手動設定的值，不隨機更改
     updatePointers();
     
     // 添加動畫效果
     const redPointer = document.getElementById('redPointer');
-    const bluePointer = document.getElementById('bluePointer');
     
     redPointer.style.transform = 'scale(1.1)';
-    bluePointer.style.transform = 'scale(1.1)';
     
     setTimeout(() => {
       redPointer.style.transform = 'scale(1)';
-      bluePointer.style.transform = 'scale(1)';
     }, 200);
   });
   
@@ -56,6 +30,86 @@ document.addEventListener('DOMContentLoaded', function() {
     redPointerValue = 1;
     bluePointerValue = 12;
     updatePointers();
+  });
+    // 更新時鐘顯示
+  function updateClockDisplay() {
+    // 更新指針角度：數字1在1點位置(30度)，數字12在12點位置(0度)
+    let angle;
+    if (bluePointerValue === 12) {
+      angle = 0; // 12點位置
+    } else {
+      angle = bluePointerValue * 30; // 1~11點位置
+    }
+    clockHand.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
+    
+    // 更新選中狀態
+    clockNumbers.forEach(function(clockNumber) {
+      const value = parseInt(clockNumber.getAttribute('data-value'));
+      if (value === bluePointerValue) {
+        clockNumber.classList.add('selected');
+      } else {
+        clockNumber.classList.remove('selected');
+      }
+    });
+  }
+  // 藍指針彈窗控制
+  const bluePointerElement = document.getElementById('bluePointer');
+  const pointerControl = document.querySelector('.pointer-control');
+  const popup = document.getElementById('bluePointerPopup');
+  const closePopup = document.getElementById('closePopup');
+  const clockHand = document.getElementById('clockHand');
+  const clockNumbers = document.querySelectorAll('.clock-number');
+
+  // 點擊時鐘圖示顯示彈窗
+  pointerControl.addEventListener('click', function(e) {
+    e.stopPropagation();
+    popup.classList.add('show');
+    updateClockDisplay();
+  });
+
+  // 點擊藍指針值也可以顯示彈窗
+  bluePointerElement.addEventListener('click', function(e) {
+    e.stopPropagation();
+    popup.classList.add('show');
+    updateClockDisplay();
+  });
+
+  // 關閉彈窗
+  closePopup.addEventListener('click', function() {
+    popup.classList.remove('show');
+  });
+
+  // 點擊彈窗背景關閉
+  popup.addEventListener('click', function(e) {
+    if (e.target === popup) {
+      popup.classList.remove('show');
+    }
+  });
+
+  // ESC 鍵關閉彈窗
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && popup.classList.contains('show')) {
+      popup.classList.remove('show');
+    }
+  });
+
+  // 時鐘數字點擊事件
+  clockNumbers.forEach(function(clockNumber) {
+    clockNumber.addEventListener('click', function() {
+      const value = parseInt(this.getAttribute('data-value'));
+      bluePointerValue = value;
+      updatePointers();
+      updateClockDisplay();
+      
+      // 添加選中效果
+      clockNumbers.forEach(num => num.classList.remove('selected'));
+      this.classList.add('selected');
+      
+      // 0.5 秒後自動關閉彈窗
+      setTimeout(() => {
+        popup.classList.remove('show');
+      }, 500);
+    });
   });
   
   // 初始化顯示
@@ -167,9 +221,8 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="data-content">
             <h4>🔍 檔案系統 A</h4>
             <p>日期: 2045.03.15</p>
-            <p>實驗代號: IAS-001</p>
-            <p>狀態: 初始化完成</p>
-            <p>備註: 時間錨點已設定</p>
+            <p>實驗代號: IAS-001</p>            <p>狀態: 初始化完成</p>
+            <p>備註: 系統準備就緒</p>
             <p>紅指針: 位置 ${drawerId - 1}</p>
           </div>
         `,
@@ -177,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="data-content">
             <h4>⚠️ 隱藏分區 B</h4>
             <p>日期: 2045.03.16</p>
-            <p>警告: 時間異常檢測</p>
+            <p>警告: 系統異常檢測</p>
             <p>錯誤代碼: TL_PARADOX_001</p>
             <p>建議: 立即停止實驗</p>
             <p>紅指針: 異常偏移 +${Math.floor(Math.random() * 3) + 1}</p>
@@ -277,9 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       diskElement.style.transform = 'rotateY(0deg)';
     }, 150);
-  }
-
-  function insertDiskToReader(drawerId, diskId, side, reader, diskElement) {
+  }  function insertDiskToReader(drawerId, diskId, side, reader, diskElement) {
     // 隱藏原始 disk
     diskElement.style.display = 'none';
     
@@ -287,6 +338,30 @@ document.addEventListener('DOMContentLoaded', function() {
     reader.classList.add('disk-inserted');
     reader.querySelector('.power-light').classList.add('active');
     reader.querySelector('.reader-status').textContent = `Disk ${diskId} (${side}面)`;
+    
+    // 隱藏插槽提示文字和原本的 disk 圖示
+    const slotHint = reader.querySelector('.slot-hint');
+    if (slotHint) slotHint.style.display = 'none';
+    
+    const slotOpening = reader.querySelector('.slot-opening');
+    if (slotOpening) {
+      slotOpening.style.display = 'none';
+    }
+    
+    // 在插槽中顯示對應面的圖示
+    const readerSlot = reader.querySelector('.reader-slot');
+    const insertedIcon = document.createElement('div');
+    insertedIcon.className = 'inserted-disk-icon';
+    insertedIcon.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      z-index: 2;
+    `;
+    insertedIcon.textContent = side === 'A' ? '💿' : '📀';
+    readerSlot.appendChild(insertedIcon);
     
     // 顯示資料
     const dataDisplay = document.querySelector(`#dataDisplay${drawerId}`);
@@ -300,13 +375,22 @@ document.addEventListener('DOMContentLoaded', function() {
       ejectBtn.onclick = () => ejectDiskFromReader(drawerId, reader, diskElement);
       reader.appendChild(ejectBtn);
     }
-  }
-
-  function ejectDiskFromReader(drawerId, reader, diskElement) {
+  }  function ejectDiskFromReader(drawerId, reader, diskElement) {
     // 恢復讀卡機狀態
     reader.classList.remove('disk-inserted');
     reader.querySelector('.power-light').classList.remove('active');
     reader.querySelector('.reader-status').textContent = '待機中...';
+    
+    // 顯示插槽提示文字和原本的 disk 圖示
+    const slotHint = reader.querySelector('.slot-hint');
+    if (slotHint) slotHint.style.display = 'block';
+    
+    const slotOpening = reader.querySelector('.slot-opening');
+    if (slotOpening) slotOpening.style.display = 'block';
+    
+    // 移除插入的 disk 圖示
+    const insertedIcon = reader.querySelector('.inserted-disk-icon');
+    if (insertedIcon) insertedIcon.remove();
     
     // 移除退出按鈕
     const ejectBtn = reader.querySelector('.eject-btn');
