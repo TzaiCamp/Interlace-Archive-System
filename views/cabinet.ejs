@@ -30,10 +30,38 @@
               <% } %>
             </button>
           </h2>          <div id="collapse<%= i %>" class="accordion-collapse collapse"
-            aria-labelledby="heading<%= i %>" data-bs-parent="#cabinetAccordion">
-            <div class="accordion-body">
-              <div class="disk-slot">[ Disk 插槽 ]</div>
-              <div>[ 資料顯示區 / 操作空間（未來填）]</div>
+            aria-labelledby="heading<%= i %>" data-bs-parent="#cabinetAccordion">            <div class="accordion-body">
+              <div class="disk-area">
+                <!-- 實體 Disk，可拖曳 -->
+                <div class="physical-disk" draggable="true" data-disk-id="1">
+                  <div class="disk-face disk-face-a" data-side="A">
+                    <span class="disk-icon">💿</span>
+                    <span class="face-label">A</span>
+                  </div>
+                  <div class="disk-face disk-face-b" data-side="B" style="display: none;">
+                    <span class="disk-icon">💽</span>
+                    <span class="face-label">B</span>
+                  </div>
+                  <button class="flip-btn" data-drawer="<%= i %>">🔄</button>
+                </div>
+                
+                <!-- 讀卡機插槽 -->
+                <div class="card-reader" data-drawer="<%= i %>">
+                  <div class="reader-slot">
+                    <div class="slot-opening">📀</div>
+                    <div class="slot-hint">將 Disk 拖曳至此</div>
+                  </div>
+                  <div class="reader-display">
+                    <div class="power-light"></div>
+                    <span class="reader-status">待機中...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 資料顯示區 -->
+              <div class="data-display" id="dataDisplay<%= i %>">
+                <div class="no-data">讀卡機待機中...</div>
+              </div>
             </div>
           </div>
         </div>

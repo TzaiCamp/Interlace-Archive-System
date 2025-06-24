@@ -34,6 +34,22 @@ body {
   display: none;
 }
 
+.unlock-icon, .lock-icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+}
+
+.unlock-icon {
+  color: #90ee90;
+}
+
+.lock-icon {
+  color: #ff9999;
+}
+
 .accordion-item {
   background-color: #181a1f;
   border: none;
@@ -48,32 +64,328 @@ body {
   padding: 1rem;
 }
 
+/* Disk 區域佈局 */
+.disk-area {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #2a2f38;
+  border-radius: 8px;
+}
+
+/* 實體 Disk */
+.physical-disk {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  cursor: grab;
+  transition: all 0.3s ease;
+}
+
+.physical-disk:active {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+
+.physical-disk.dragging {
+  opacity: 0.7;
+  transform: rotate(5deg);
+}
+
+.disk-face {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #4a4a4a 0%, #2a2a2a 100%);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #666;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.disk-face-a {
+  border-color: #4CAF50;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.disk-face-b {
+  border-color: #FF9800;
+  box-shadow: 0 0 10px rgba(255, 152, 0, 0.3);
+}
+
+.disk-face .disk-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.face-label {
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.flip-btn {
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: #555;
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.flip-btn:hover {
+  background: #777;
+  transform: rotate(180deg);
+}
+
+/* 讀卡機 */
+.card-reader {
+  width: 120px;
+  height: 100px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+  border: 2px solid #555;
+  border-radius: 8px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.card-reader.drag-over {
+  border-color: #91d1ff;
+  box-shadow: 0 0 15px rgba(145, 209, 255, 0.5);
+}
+
+.reader-slot {
+  width: 60px;
+  height: 8px;
+  background: #000;
+  margin: 20px auto 10px;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.slot-opening {
+  text-align: center;
+  font-size: 20px;
+  margin-top: -15px;
+}
+
+.slot-hint {
+  font-size: 10px;
+  color: #888;
+  text-align: center;
+}
+
+.reader-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 10px;
+}
+
+.power-light {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff4444;
+  animation: blink 2s infinite;
+}
+
+.power-light.active {
+  background: #44ff44;
+  animation: none;
+}
+
+.reader-status {
+  font-size: 10px;
+  color: #ccc;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+/* 插入成功狀態 */
+.card-reader.disk-inserted {
+  border-color: #4CAF50;
+}
+
+.card-reader.disk-inserted .reader-slot::after {
+  content: '💿';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+}
+
+.card-reader .eject-btn {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: #d32f2f;
+  color: white;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.card-reader .eject-btn:hover {
+  background: #b71c1c;
+}
 .disk-slot {
   background: #30343c;
-  padding: 0.75rem;
-  border-radius: 6px;
-  border: 1px dashed #666;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid #444;
+  margin-bottom: 1rem;
+}
+
+.slot-empty {
   text-align: center;
+}
+
+.slot-indicator {
   color: #bbb;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.disk-options {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.disk-choice {
+  background: #3a3f47;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.disk-choice:hover {
+  border-color: #91d1ff;
+  background: #404550;
+}
+
+.disk-visual {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
-.unlock-icon {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #90ee90;
-  font-size: 1.1rem;
+.disk-side-a .disk-icon {
+  color: #4CAF50; /* 綠色 A面 */
 }
 
-.lock-icon {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #ff9999;
-  font-size: 1.1rem;
+.disk-side-b .disk-icon {
+  color: #FF9800; /* 橙色 B面 */
+}
+
+.side-label {
+  font-size: 0.8rem;
+  color: #ccc;
+  font-weight: bold;
+}
+
+.insert-btn {
+  background: #1c1f26;
+  color: #e0e0e0;
+  border: 1px solid #666;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.insert-btn:hover {
+  background: #2a2f38;
+  border-color: #91d1ff;
+  color: #91d1ff;
+}
+
+/* 已插入狀態 */
+.slot-occupied {
+  text-align: center;
+}
+
+.inserted-disk {
+  background: #2a5f3a;
+  border: 1px solid #4CAF50;
+  border-radius: 6px;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.eject-btn {
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.eject-btn:hover {
+  background: #b71c1c;
+}
+
+/* 資料顯示區 */
+.data-display {
+  background: #1a1d23;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 1rem;
+  min-height: 100px;
+}
+
+.no-data {
+  color: #777;
+  text-align: center;
+  font-style: italic;
+}
+
+.data-content {
+  color: #91d1ff;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.data-content h4 {
+  color: #fff;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.data-content p {
+  margin: 0.3rem 0;
 }
 
 .accordion-button.disabled {
