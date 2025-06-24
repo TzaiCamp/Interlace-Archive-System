@@ -10,6 +10,29 @@
   <div class="cabinet">
     <h2 class="text-center mb-4">IAS 密碼櫃</h2>
 
+    <!-- 紅藍指針記分板 -->
+    <div class="pointer-scoreboard">
+      <div class="pointer-display">
+        <div class="pointer-section red-pointer">
+          <div class="pointer-label">紅指針</div>
+          <div class="pointer-value" id="redPointer">I</div>
+        </div>
+        <div class="scoreboard-divider">:</div>
+        <div class="pointer-section blue-pointer">
+          <div class="pointer-label">藍指針</div>
+          <div class="pointer-value" id="bluePointer">XII</div>
+        </div>
+      </div>
+      <div class="pointer-status">
+        <span class="status-text">時間錨點狀態：</span>
+        <span class="status-indicator stable" id="timeStatus">穩定</span>
+      </div>
+      <div class="pointer-controls">
+        <button class="control-btn" id="randomPointers">🎲 隨機指針</button>
+        <button class="control-btn" id="resetPointers">🔄 重置指針</button>
+      </div>
+    </div>
+
     <div class="accordion" id="cabinetAccordion">
       <!-- Drawer loop -->
       <%

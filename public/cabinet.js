@@ -1,4 +1,66 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // 羅馬數字陣列
+  const romanNumerals = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+  
+  // 初始化指針值
+  let redPointerValue = 1;
+  let bluePointerValue = 12;
+  
+  // 更新指針顯示
+  function updatePointers() {
+    document.getElementById('redPointer').textContent = romanNumerals[redPointerValue];
+    document.getElementById('bluePointer').textContent = romanNumerals[bluePointerValue];
+    
+    // 根據指針值更新時間狀態
+    updateTimeStatus();
+  }
+  
+  // 更新時間狀態
+  function updateTimeStatus() {
+    const statusElement = document.getElementById('timeStatus');
+    const difference = Math.abs(redPointerValue - bluePointerValue);
+    
+    if (difference <= 2) {
+      statusElement.textContent = '危險';
+      statusElement.className = 'status-indicator critical';
+    } else if (difference <= 4) {
+      statusElement.textContent = '異常';
+      statusElement.className = 'status-indicator anomaly';
+    } else {
+      statusElement.textContent = '穩定';
+      statusElement.className = 'status-indicator stable';
+    }
+  }
+  
+  // 隨機指針按鈕
+  document.getElementById('randomPointers').addEventListener('click', function() {
+    redPointerValue = Math.floor(Math.random() * 12) + 1;
+    bluePointerValue = Math.floor(Math.random() * 12) + 1;
+    updatePointers();
+    
+    // 添加動畫效果
+    const redPointer = document.getElementById('redPointer');
+    const bluePointer = document.getElementById('bluePointer');
+    
+    redPointer.style.transform = 'scale(1.1)';
+    bluePointer.style.transform = 'scale(1.1)';
+    
+    setTimeout(() => {
+      redPointer.style.transform = 'scale(1)';
+      bluePointer.style.transform = 'scale(1)';
+    }, 200);
+  });
+  
+  // 重置指針按鈕
+  document.getElementById('resetPointers').addEventListener('click', function() {
+    redPointerValue = 1;
+    bluePointerValue = 12;
+    updatePointers();
+  });
+  
+  // 初始化顯示
+  updatePointers();
+
   const accordionButtons = document.querySelectorAll('.accordion-button');
   
   accordionButtons.forEach(button => {
