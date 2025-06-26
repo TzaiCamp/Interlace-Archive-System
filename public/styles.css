@@ -80,9 +80,18 @@ body {
 .physical-disk {
   position: relative;
   width: 80px;
-  height: 80px;
+  height: 100px; /* 增加高度以容納底部標籤 */
   cursor: grab;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.disk-container {
+  width: 80px;
+  height: 80px;
+  position: relative;
 }
 
 .physical-disk:active {
@@ -129,21 +138,44 @@ body {
   font-size: 12px;
   font-weight: bold;
   color: #fff;
+  margin-top: 4px;
+}
+
+.disk-id-label {
+  width: 80px;
+  height: 18px;
+  background: linear-gradient(135deg, #333 0%, #1a1a1a 100%);
+  border: 1px solid #555;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.disk-id-text {
+  font-size: 10px;
+  font-weight: bold;
+  color: #00ff00;
+  text-shadow: 0 0 3px rgba(0, 255, 0, 0.5);
+  letter-spacing: 0.5px;
 }
 
 .flip-btn {
   position: absolute;
-  bottom: -10px;
-  right: -10px;
-  width: 24px;
-  height: 24px;
+  bottom: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   border: none;
   background: #555;
   color: #fff;
-  font-size: 12px;
+  font-size: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
+  z-index: 10;
 }
 
 .flip-btn:hover {
@@ -746,4 +778,38 @@ body {
   box-shadow: 0 0 10px rgba(55, 66, 250, 0.8);
   transition: transform 0.5s ease;
   z-index: 5;
+}
+
+/* 受限制的抽屜樣式 - 統一使用灰色禁用樣式 */
+.accordion-button.restricted[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: #15181e !important;
+  color: #666 !important;
+  border-color: #333 !important;
+}
+
+.accordion-button.restricted[disabled]:hover {
+  background-color: #15181e !important;
+  color: #666 !important;
+  transform: none !important;
+}
+
+/* 移除橘紅色鎖頭圖示，或改為灰色 */
+.accordion-button.restricted[disabled]::after {
+  content: "🔒";
+  position: absolute;
+  right: 1rem;
+  font-size: 1.2rem;
+  color: #666;
+  opacity: 0.7;
+}
+
+/* 確保受限制的抽屜不會被 hover 效果覆蓋 */
+.accordion-button.restricted[disabled]:focus,
+.accordion-button.restricted[disabled]:active {
+  background-color: #15181e !important;
+  color: #666 !important;
+  border-color: #333 !important;
+  box-shadow: none !important;
 }

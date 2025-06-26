@@ -51,18 +51,22 @@
               <% } %>
             </button>
           </h2>          <div id="collapse<%= i %>" class="accordion-collapse collapse"
-            aria-labelledby="heading<%= i %>" data-bs-parent="#cabinetAccordion">            <div class="accordion-body">
-              <div class="disk-area">
-                <!-- 實體 Disk，可拖曳 -->
-                <div class="physical-disk" draggable="true" data-disk-id="1">
-                  <div class="disk-face disk-face-a" data-side="A">
-                    <span class="disk-icon">💿</span>
-                    <span class="face-label">A</span>
-                  </div>                  <div class="disk-face disk-face-b" data-side="B" style="display: none;">
-                    <span class="disk-icon">📀</span>
-                    <span class="face-label">B</span>
+            aria-labelledby="heading<%= i %>" data-bs-parent="#cabinetAccordion">            <div class="accordion-body">              <div class="disk-area">                <!-- 實體 Disk，可拖曳 -->
+                <div class="physical-disk" draggable="true" data-disk-id="<%= i %>">
+                  <div class="disk-container">
+                    <div class="disk-face disk-face-a" data-side="A">
+                      <span class="disk-icon">💿</span>
+                      <span class="face-label">A</span>
+                    </div>
+                    <div class="disk-face disk-face-b" data-side="B" style="display: none;">
+                      <span class="disk-icon">📀</span>
+                      <span class="face-label">B</span>
+                    </div>
+                    <button class="flip-btn" data-drawer="<%= i %>">🔄</button>
                   </div>
-                  <button class="flip-btn" data-drawer="<%= i %>">🔄</button>
+                  <div class="disk-id-label">
+                    <span class="disk-id-text">Disk <%= i %></span>
+                  </div>
                 </div>
                 
                 <!-- 讀卡機插槽 -->
