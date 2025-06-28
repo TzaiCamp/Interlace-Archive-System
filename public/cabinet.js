@@ -5,17 +5,38 @@ document.addEventListener('DOMContentLoaded', function() {
   // 抽屜配置（與 EJS 同步）
   const drawerConfigs = {
     1: { diskInput: true, infoDisplay: true },
-    2: { diskInput: false, infoDisplay: true },
+    2: { diskInput: true, infoDisplay: true },
     3: { diskInput: true, infoDisplay: true },
-    4: { diskInput: true, infoDisplay: true },
+    4: { diskInput: false, infoDisplay: true },
     5: { diskInput: false, infoDisplay: true },
     6: { diskInput: false, infoDisplay: true },
     7: { diskInput: false, infoDisplay: true },
     8: { diskInput: false, infoDisplay: true },
-    9: { diskInput: true, infoDisplay: true },
-    10: { diskInput: false, infoDisplay: true },
+    9: { diskInput: false, infoDisplay: true },
+    10: { diskInput: true, infoDisplay: true },
     11: { diskInput: false, infoDisplay: true },
     12: { diskInput: false, infoDisplay: false }
+  };
+  
+  /*
+   * 隱藏謎題機制：Disk 插入時自動調整紅指針
+   * 
+   * 玩家需要自行探索的規則：
+   * - Disk 1: A面 → 紅指針 1, B面 → 紅指針 1
+   * - Disk 3: A面 → 紅指針 3, B面 → 紅指針 3  
+   * - Disk 4: A面 → 紅指針 4, B面 → 紅指針 6
+   * - Disk 9: A面 → 紅指針 9, B面 → 紅指針 11
+   * 
+   * 這個機制是謎題的核心，結合紅指針抽屜限制，
+   * 玩家需要透過試驗來發現 disk 面向與指針值的關係。
+   */
+  
+  // Disk 編號映射
+  const diskMapping = {
+    1: 1,  // drawer 1 => disk 1
+    2: 4,  // drawer 2 => disk 4
+    3: 3,  // drawer 3 => disk 3
+    10: 9  // drawer 10 => disk 9
   };
   
   // 檢查抽屜是否有特定模組
@@ -28,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let bluePointerValue = 12;
   
   // Debug 模式 - 設為 true 時關閉紅指針限制
-  const DEBUG_MODE = true; // 發布時改為 false
+  const DEBUG_MODE = false; // 發布時改為 false
   
   // 檢查抽屜是否可以開啟
   function isDrawerAccessible(drawerNumber) {
@@ -408,8 +429,9 @@ document.addEventListener('DOMContentLoaded', function() {
       if (draggedDisk) {
         const drawerId = reader.getAttribute('data-drawer');
         const currentSide = getCurrentDiskSide(draggedDisk);
+        const diskId = draggedDisk.getAttribute('data-disk-id'); // 獲取真實的 disk ID
         
-        insertDiskToReader(drawerId, '1', currentSide, reader, draggedDisk);
+        insertDiskToReader(drawerId, diskId, currentSide, reader, draggedDisk);
       }
     }
   });
@@ -455,13 +477,38 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     
+    // 獲取真實的 disk 編號
+    const realDiskId = diskMapping[drawerId] || drawerId;
+    
+    // Disk 與紅指針的映射規則（隱藏機制，玩家需要探索）
+    const diskToPointerMapping = {
+      1: { A: 1, B: 1 },   // disk 1: A -> 1, B -> 1
+      3: { A: 3, B: 3 },   // disk 3: A -> 3, B -> 3
+      4: { A: 4, B: 6 },   // disk 4: A -> 4, B -> 6
+      9: { A: 9, B: 11 }   // disk 9: A -> 9, B -> 11
+    };
+    
+    // 根據 disk 編號和面向更新紅指針
+    if (diskToPointerMapping[realDiskId] && diskToPointerMapping[realDiskId][side]) {
+      redPointerValue = diskToPointerMapping[realDiskId][side];
+      updatePointers();
+      updateDrawerAvailability(); // 更新抽屜可用狀態
+      
+      // 添加紅指針動畫效果
+      const redPointer = document.getElementById('redPointer');
+      redPointer.style.transform = 'scale(1.1)';
+      setTimeout(() => {
+        redPointer.style.transform = 'scale(1)';
+      }, 200);
+    }
+    
     // 隱藏原始 disk
     diskElement.style.display = 'none';
     
     // 更新讀卡機狀態
     reader.classList.add('disk-inserted');
     reader.querySelector('.power-light').classList.add('active');
-    reader.querySelector('.reader-status').textContent = `Disk ${diskId} (${side}面)`;
+    reader.querySelector('.reader-status').textContent = `Disk ${realDiskId} (${side}面)`;
     
     // 隱藏插槽提示文字和原本的 disk 圖示
     const slotHint = reader.querySelector('.slot-hint');
@@ -487,9 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
     insertedIcon.textContent = side === 'A' ? '💿' : '📀';
     readerSlot.appendChild(insertedIcon);
     
-    // 顯示資料
-    const dataDisplay = document.querySelector(`#dataDisplay${drawerId}`);
-    displayDiskData(drawerId, diskId, side, dataDisplay);
+    // 不再顯示資料到 dataDisplay，移除這部分邏輯
     
     // 添加退出按鈕
     if (!reader.querySelector('.eject-btn')) {
@@ -525,9 +570,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 顯示原始 disk
     diskElement.style.display = 'block';
     
-    // 清空資料顯示
-    const dataDisplay = document.querySelector(`#dataDisplay${drawerId}`);
-    dataDisplay.innerHTML = '<div class="no-data">讀卡機待機中...</div>';
+    // 不再清空資料顯示，因為已經移除了插入時的資料更新
   }
   
   // 為純資訊顯示模組提供靜態內容

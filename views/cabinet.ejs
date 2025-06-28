@@ -38,17 +38,25 @@
         // 抽屜配置：1,3,4,9 有 disk input，1-11 有 info display，12 號完全空白
         const drawerConfigs = {
           1: { diskInput: true, infoDisplay: true },
-          2: { diskInput: false, infoDisplay: true },
+          2: { diskInput: true, infoDisplay: true },
           3: { diskInput: true, infoDisplay: true },
-          4: { diskInput: true, infoDisplay: true },
+          4: { diskInput: false, infoDisplay: true },
           5: { diskInput: false, infoDisplay: true },
           6: { diskInput: false, infoDisplay: true },
           7: { diskInput: false, infoDisplay: true },
           8: { diskInput: false, infoDisplay: true },
-          9: { diskInput: true, infoDisplay: true },
-          10: { diskInput: false, infoDisplay: true },
+          9: { diskInput: false, infoDisplay: true },
+          10: { diskInput: true, infoDisplay: true },
           11: { diskInput: false, infoDisplay: true },
           12: { diskInput: false, infoDisplay: false }
+        };
+        
+        // Disk 編號映射
+        const diskMapping = {
+          1: 1,  // drawer 1 => disk 1
+          2: 4,  // drawer 2 => disk 4
+          3: 3,  // drawer 3 => disk 3
+          10: 9  // drawer 10 => disk 9
         };
       %>
       <% for(let i = 1; i <= 12; i++) { %>
@@ -77,7 +85,7 @@
                 <% if (config.diskInput) { %>
                   <div class="disk-area">
                     <!-- 實體 Disk，可拖曳 -->
-                    <div class="physical-disk" draggable="true" data-disk-id="<%= i %>">
+                    <div class="physical-disk" draggable="true" data-disk-id="<%= diskMapping[i] || i %>">
                       <div class="disk-container">
                         <div class="disk-face disk-face-a" data-side="A">
                           <span class="disk-icon">💿</span>
@@ -90,7 +98,7 @@
                         <button class="flip-btn" data-drawer="<%= i %>">🔄</button>
                       </div>
                       <div class="disk-id-label">
-                        <span class="disk-id-text">Disk <%= i %></span>
+                        <span class="disk-id-text">Disk <%= diskMapping[i] || i %></span>
                       </div>
                     </div>
                     
