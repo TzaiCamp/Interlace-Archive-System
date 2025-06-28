@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   // 初始化指針值
-  let redPointerValue = 1;
+  let redPointerValue = 3;
   let bluePointerValue = 12;
   
   // Echo 機制 - 謎題核心邏輯（玩家無法直接得知）
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function isDrawerAccessible(drawerNumber) {
     // Debug 模式下所有抽屜都可開啟
     if (DEBUG_MODE) {
-      console.log(`Debug模式：允許開啟抽屜 ${drawerNumber}`);
+      // console.log(`Debug模式：允許開啟抽屜 ${drawerNumber}`);
       return true;
     }
     
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 重置指針按鈕
   document.getElementById('resetPointers').addEventListener('click', function() {
-    redPointerValue = 1;
+    redPointerValue = 3;
     bluePointerValue = 12;
     updatePointers();
     updateDrawerAvailability(); // 更新抽屜可用狀態
@@ -645,17 +645,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function displayStaticInfo(drawerId, dataDisplay) {
-    const staticInfo = {
-      2: '🖥️ 系統監控 | 狀態: 運行正常 | 紅指針: 活動中',
-      5: '🎛️ 控制面板 | 權限: 管理員 | 功能: 啟用',
-      6: '🕰️ 時間錨點 | 當前錨點: 2045.03.20 | 穩定性: 良好',
-      7: '📝 實驗日誌 | 最後更新: 2045.03.20 | 記錄完整',
-      8: '🚨 緊急系統 | 狀態: 待命 | 響應時間: < 1秒',
-      10: '📊 狀態報告 | 系統負載: 75% | 警告: 無',
-      11: '💾 最終備份 | 備份狀態: 完整 | 驗證: 通過'
-    };
-    
-    const content = staticInfo[drawerId] || `抽屜 ${romanNumerals[drawerId]} 系統資訊`;
+    // 統一使用簡單的 placeholder
+    const content = `抽屜 ${romanNumerals[drawerId]} 系統資訊`;
     dataDisplay.innerHTML = `<div class="data-content"><h4>📋 系統資訊</h4><p>${content}</p></div>`;
   }
   
