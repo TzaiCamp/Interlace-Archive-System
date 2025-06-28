@@ -48,6 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
   let redPointerValue = 1;
   let bluePointerValue = 12;
   
+  // Echo 機制 - 謎題核心邏輯（玩家無法直接得知）
+  let echoArray = new Array(12).fill(null); // echo[0~11] 對應指針值 1~12
+  
   // Debug 模式 - 設為 true 時關閉紅指針限制
   const DEBUG_MODE = false; // 發布時改為 false
   
@@ -172,6 +175,12 @@ document.addEventListener('DOMContentLoaded', function() {
     bluePointerValue = 12;
     updatePointers();
     updateDrawerAvailability(); // 更新抽屜可用狀態
+  });
+
+  // 重置 Echo 陣列按鈕（Debug 用）
+  document.getElementById('resetEcho').addEventListener('click', function() {
+    echoArray = new Array(12).fill(null);
+    console.log('Echo array reset:', echoArray);
   });
 
   // 更新時鐘顯示
@@ -488,9 +497,55 @@ document.addEventListener('DOMContentLoaded', function() {
       9: { A: 9, B: 11 }   // disk 9: A -> 9, B -> 11
     };
     
-    // 根據 disk 編號和面向更新紅指針
+    // 記錄當前紅指針值（用於 echo 寫入）
+    const previousRedPointer = redPointerValue;
+    
+    // 根據 disk 編號和A B面計算目標紅指針值
+    let targetRedPointer = null;
     if (diskToPointerMapping[realDiskId] && diskToPointerMapping[realDiskId][side]) {
-      redPointerValue = diskToPointerMapping[realDiskId][side];
+      targetRedPointer = diskToPointerMapping[realDiskId][side];
+    }
+    
+    if (targetRedPointer !== null) {
+      // 謎題漏洞保護 1：檢查是否為相同位置操作
+      if (previousRedPointer === realDiskId) {
+        // 紅指針位置與 disk 編號相同，視為無效操作
+        alert(`🚫 謎題規則：紅指針指向 ${previousRedPointer} 時，無法插入 Disk ${realDiskId}（相同位置無效）`);
+        console.log(`謎題漏洞觸發：相同位置操作 - 紅指針 ${previousRedPointer}，Disk ${realDiskId}`);
+        return; // 直接返回，不執行任何邏輯
+      }
+      
+      // 檢查是否有藍指針偏移
+      const bluePointerIndex = bluePointerValue - 1; // 陣列索引從 0 開始
+      const echoValue = echoArray[bluePointerIndex];
+      
+      let finalRedPointer;
+      if (echoValue !== null) {
+        // 有 echo 偏移，計算最終紅指針值
+        finalRedPointer = targetRedPointer + echoValue;
+        console.log(`計算偏移: ${targetRedPointer} + echo[${bluePointerValue}](${echoValue}) = ${finalRedPointer}`);
+      } else {
+        // 沒有 echo 偏移，直接使用目標值
+        finalRedPointer = targetRedPointer;
+        console.log(`無偏移: 目標紅指針 ${targetRedPointer}`);
+      }
+      
+      // 謎題漏洞保護 2：檢查跳轉溢出
+      if (finalRedPointer > 12 || finalRedPointer < 1) {
+        // 跳轉溢出，視為跳轉失敗
+        alert(`🚫 謎題規則：指針跳轉溢出（計算值: ${finalRedPointer}），操作失敗`);
+        console.log(`謎題漏洞觸發：跳轉溢出 - 計算值 ${finalRedPointer} 超出範圍 [1,12]`);
+        return; // 直接返回，不更新任何狀態
+      }
+      
+      // 跳轉成功，更新 echo 陣列和紅指針
+      // Echo 陣列只儲存 disk ID (1, 3, 4, 9)，不儲存 targetRedPointer
+      echoArray[previousRedPointer - 1] = realDiskId; // 陣列索引從 0 開始
+      console.log(`Echo 寫入: echo[${previousRedPointer}] = ${realDiskId} (disk ID)`);
+      
+      redPointerValue = finalRedPointer;
+      console.log(`紅指針跳轉成功: ${previousRedPointer} → ${finalRedPointer}`);
+      
       updatePointers();
       updateDrawerAvailability(); // 更新抽屜可用狀態
       
@@ -502,6 +557,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 200);
     }
     
+    // 註解掉讀卡機視覺狀態更新 - drag disk 主要功能是改變紅指針
+    /*
     // 隱藏原始 disk
     diskElement.style.display = 'none';
     
@@ -544,6 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
       ejectBtn.onclick = () => ejectDiskFromReader(drawerId, reader, diskElement);
       reader.appendChild(ejectBtn);
     }
+    */
   }  
   
   function ejectDiskFromReader(drawerId, reader, diskElement) {
