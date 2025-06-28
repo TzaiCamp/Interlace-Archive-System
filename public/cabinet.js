@@ -1,12 +1,34 @@
 document.addEventListener('DOMContentLoaded', function() {
   // 羅馬數字陣列
   const romanNumerals = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+  
+  // 抽屜配置（與 EJS 同步）
+  const drawerConfigs = {
+    1: { diskInput: true, infoDisplay: true },
+    2: { diskInput: false, infoDisplay: true },
+    3: { diskInput: true, infoDisplay: true },
+    4: { diskInput: true, infoDisplay: true },
+    5: { diskInput: false, infoDisplay: true },
+    6: { diskInput: false, infoDisplay: true },
+    7: { diskInput: false, infoDisplay: true },
+    8: { diskInput: false, infoDisplay: true },
+    9: { diskInput: true, infoDisplay: true },
+    10: { diskInput: false, infoDisplay: true },
+    11: { diskInput: false, infoDisplay: true },
+    12: { diskInput: false, infoDisplay: false }
+  };
+  
+  // 檢查抽屜是否有特定模組
+  function hasModule(drawerId, moduleType) {
+    return drawerConfigs[drawerId] && drawerConfigs[drawerId][moduleType];
+  }
+  
   // 初始化指針值
   let redPointerValue = 1;
   let bluePointerValue = 12;
   
   // Debug 模式 - 設為 true 時關閉紅指針限制
-  const DEBUG_MODE = false; // 發布時改為 false
+  const DEBUG_MODE = true; // 發布時改為 false
   
   // 檢查抽屜是否可以開啟
   function isDrawerAccessible(drawerNumber) {
@@ -427,6 +449,12 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   function insertDiskToReader(drawerId, diskId, side, reader, diskElement) {
+    // 檢查是否有 diskInput 模組
+    if (!hasModule(drawerId, 'diskInput')) {
+      console.log(`抽屜 ${drawerId} 不支援 Disk 輸入`);
+      return;
+    }
+    
     // 隱藏原始 disk
     diskElement.style.display = 'none';
     
@@ -501,4 +529,35 @@ document.addEventListener('DOMContentLoaded', function() {
     const dataDisplay = document.querySelector(`#dataDisplay${drawerId}`);
     dataDisplay.innerHTML = '<div class="no-data">讀卡機待機中...</div>';
   }
+  
+  // 為純資訊顯示模組提供靜態內容
+  function initializeInfoOnlyModules() {
+    Object.keys(drawerConfigs).forEach(drawerId => {
+      const config = drawerConfigs[drawerId];
+      if (!config.diskInput && config.infoDisplay) {
+        const dataDisplay = document.querySelector(`#dataDisplay${drawerId}`);
+        if (dataDisplay) {
+          displayStaticInfo(drawerId, dataDisplay);
+        }
+      }
+    });
+  }
+
+  function displayStaticInfo(drawerId, dataDisplay) {
+    const staticInfo = {
+      2: '🖥️ 系統監控 | 狀態: 運行正常 | 紅指針: 活動中',
+      5: '🎛️ 控制面板 | 權限: 管理員 | 功能: 啟用',
+      6: '🕰️ 時間錨點 | 當前錨點: 2045.03.20 | 穩定性: 良好',
+      7: '📝 實驗日誌 | 最後更新: 2045.03.20 | 記錄完整',
+      8: '🚨 緊急系統 | 狀態: 待命 | 響應時間: < 1秒',
+      10: '📊 狀態報告 | 系統負載: 75% | 警告: 無',
+      11: '💾 最終備份 | 備份狀態: 完整 | 驗證: 通過'
+    };
+    
+    const content = staticInfo[drawerId] || `抽屜 ${romanNumerals[drawerId]} 系統資訊`;
+    dataDisplay.innerHTML = `<div class="data-content"><h4>📋 系統資訊</h4><p>${content}</p></div>`;
+  }
+  
+  // 初始化靜態資訊顯示
+  initializeInfoOnlyModules();
 });

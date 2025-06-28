@@ -35,6 +35,21 @@
       <!-- Drawer loop -->
       <%
         const romanNumerals = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+        // 抽屜配置：1,3,4,9 有 disk input，1-11 有 info display，12 號完全空白
+        const drawerConfigs = {
+          1: { diskInput: true, infoDisplay: true },
+          2: { diskInput: false, infoDisplay: true },
+          3: { diskInput: true, infoDisplay: true },
+          4: { diskInput: true, infoDisplay: true },
+          5: { diskInput: false, infoDisplay: true },
+          6: { diskInput: false, infoDisplay: true },
+          7: { diskInput: false, infoDisplay: true },
+          8: { diskInput: false, infoDisplay: true },
+          9: { diskInput: true, infoDisplay: true },
+          10: { diskInput: false, infoDisplay: true },
+          11: { diskInput: false, infoDisplay: true },
+          12: { diskInput: false, infoDisplay: false }
+        };
       %>
       <% for(let i = 1; i <= 12; i++) { %>
         <div class="accordion-item">
@@ -51,40 +66,61 @@
               <% } %>
             </button>
           </h2>          <div id="collapse<%= i %>" class="accordion-collapse collapse"
-            aria-labelledby="heading<%= i %>" data-bs-parent="#cabinetAccordion">            <div class="accordion-body">              <div class="disk-area">                <!-- 實體 Disk，可拖曳 -->
-                <div class="physical-disk" draggable="true" data-disk-id="<%= i %>">
-                  <div class="disk-container">
-                    <div class="disk-face disk-face-a" data-side="A">
-                      <span class="disk-icon">💿</span>
-                      <span class="face-label">A</span>
-                    </div>
-                    <div class="disk-face disk-face-b" data-side="B" style="display: none;">
-                      <span class="disk-icon">📀</span>
-                      <span class="face-label">B</span>
-                    </div>
-                    <button class="flip-btn" data-drawer="<%= i %>">🔄</button>
-                  </div>
-                  <div class="disk-id-label">
-                    <span class="disk-id-text">Disk <%= i %></span>
-                  </div>
-                </div>
-                
-                <!-- 讀卡機插槽 -->
-                <div class="card-reader" data-drawer="<%= i %>">
-                  <div class="reader-slot">
-                    <div class="slot-opening">💿︎</div>
-                    <div class="slot-hint">將 Disk 拖曳至此</div>
-                  </div>
-                  <div class="reader-display">
-                    <div class="power-light"></div>
-                    <span class="reader-status">待機中...</span>
-                  </div>
-                </div>
-              </div>
+            aria-labelledby="heading<%= i %>" data-bs-parent="#cabinetAccordion">
+            <div class="accordion-body">
+              <% const config = drawerConfigs[i]; %>
               
-              <!-- 資料顯示區 -->
-              <div class="data-display" id="dataDisplay<%= i %>">
-                <div class="no-data">讀卡機待機中...</div>
+              <!-- Column 佈局：第一個元素是 disk input，第二個元素是 info display -->
+              <div class="drawer-column">
+                
+                <!-- Disk Input 模組（只有 1,3,4,9 號抽屜有） -->
+                <% if (config.diskInput) { %>
+                  <div class="disk-area">
+                    <!-- 實體 Disk，可拖曳 -->
+                    <div class="physical-disk" draggable="true" data-disk-id="<%= i %>">
+                      <div class="disk-container">
+                        <div class="disk-face disk-face-a" data-side="A">
+                          <span class="disk-icon">💿</span>
+                          <span class="face-label">A</span>
+                        </div>
+                        <div class="disk-face disk-face-b" data-side="B" style="display: none;">
+                          <span class="disk-icon">📀</span>
+                          <span class="face-label">B</span>
+                        </div>
+                        <button class="flip-btn" data-drawer="<%= i %>">🔄</button>
+                      </div>
+                      <div class="disk-id-label">
+                        <span class="disk-id-text">Disk <%= i %></span>
+                      </div>
+                    </div>
+                    
+                    <!-- 讀卡機插槽 -->
+                    <div class="card-reader" data-drawer="<%= i %>">
+                      <div class="reader-slot">
+                        <div class="slot-opening">💿︎</div>
+                        <div class="slot-hint">將 Disk 拖曳至此</div>
+                      </div>
+                      <div class="reader-display">
+                        <div class="power-light"></div>
+                        <span class="reader-status">待機中...</span>
+                      </div>
+                    </div>
+                  </div>
+                <% } %>
+                
+                <!-- Info Display 模組（1-11 號抽屜有，12 號沒有） -->
+                <% if (config.infoDisplay) { %>
+                  <div class="data-display" id="dataDisplay<%= i %>">
+                    <% if (config.diskInput) { %>
+                      <div class="no-data">讀卡機待機中...</div>
+                    <% } else { %>
+                      <div class="no-data">抽屜 <%= romanNumerals[i] %> 系統資訊</div>
+                    <% } %>
+                  </div>
+                <% } %>
+                
+                <!-- 12 號抽屜完全空白，不顯示任何內容 -->
+                
               </div>
             </div>
           </div>

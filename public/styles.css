@@ -813,3 +813,20 @@ body {
   border-color: #333 !important;
   box-shadow: none !important;
 }
+
+/* 抽屜內容 Column 佈局 */
+.drawer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 確保 disk-area 作為第一個元素 */
+.drawer-column .disk-area {
+  order: 1;
+}
+
+/* 確保 data-display 作為第二個元素 */
+.drawer-column .data-display {
+  order: 2;
+}
